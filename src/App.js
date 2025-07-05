@@ -3,13 +3,16 @@ import './App.css';
 import { useState } from 'react';
 import { Router,Routes, Route} from 'react-router-dom';
 import Home from './components/home';
+import Index from './components/Landing';
+
 function App() {
   return (
     <div>
 
    
       <Routes>
-      <Route path='/' element={<Home />} />
+      <Route path='/' element={<Index />} />
+      <Route path="/home" element={<Home />} />
     </Routes>
     
 

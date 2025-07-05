@@ -1,64 +1,21 @@
-.outer-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  gap: 20px;
-  background: #f0f0f0;
-  padding: 20px;
+/* Thin scrollbar styling for modern browsers */
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #818cf8 #e0e7ff; /* thumb and track */
 }
 
-.scroll-container {
-  height: 200px;   /* or your preferred height */
-  width: 400px;
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
-  border: 2px solid #ccc;
-  border-radius: 12px;
-  background: #fff;
-
-  scrollbar-width: none; 
-  -ms-overflow-style: none; 
+/* Webkit browsers */
+.scrollbar-thumb-indigo-400::-webkit-scrollbar-thumb {
+  background-color: #818cf8;
+  border-radius: 9999px;
 }
 
-.scroll-container::-webkit-scrollbar {
-  display: none; 
+.scrollbar-track-indigo-100::-webkit-scrollbar-track {
+  background-color: #e0e7ff;
 }
 
-.title-slide {
-  height: 200px;  /* match container height */
-  scroll-snap-align: start;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  font-weight: bold;
-  background: #f8f9fa;
-  border-bottom: 1px solid #eee;
-  position: relative;
-  margin: 0;
-  padding: 20px;
-  text-align: center;
-}
-
-.side-box {
-  height: 200px;
-  width: 250px;
-  background: white;
-  border-radius: 12px;
-  border: 2px solid #ccc;
-  padding: 20px;
-  box-shadow: 0 2px 10px rgb(0 0 0 / 0.1);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.left-box {
-  text-align: left;
-}
-
-.right-box {
-  text-align: left;
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
