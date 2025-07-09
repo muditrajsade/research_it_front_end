@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SearchBar from "./SearchBar";
 
@@ -32,15 +32,15 @@ const data = [
 
 const variants = {
   enter: (direction) => ({
-    x: direction > 0 ? 200 : -200,
+    y: direction > 0 ? 200 : -200, // vertical slide
     opacity: 0,
   }),
   center: {
-    x: 0,
+    y: 0,
     opacity: 1,
-  }, // ✅ Corrected
+  },
   exit: (direction) => ({
-    x: direction > 0 ? -200 : 200,
+    y: direction > 0 ? -200 : 200, // vertical slide
     opacity: 0,
   }),
 };
@@ -48,6 +48,10 @@ const variants = {
 
 export default function FullscreenCarousel() {
   const [[index, direction], setIndex] = useState([0, 0]);
+  const scrolling = useRef(false); // throttle flag
+  const containerRef = useRef(null);
+
+  const SCROLL_THRESHOLD = 50; // Only trigger if deltaY is large enough
 
   const paginate = (newDirection) => {
     setIndex(([current]) => {
@@ -58,8 +62,30 @@ export default function FullscreenCarousel() {
     });
   };
 
+  // Improved scroll handler: throttle so only one card per gesture, and only on large deltaY
+  useEffect(() => {
+    const handleWheel = (e) => {
+      if (scrolling.current) return;
+      if (Math.abs(e.deltaY) < SCROLL_THRESHOLD) return;
+      if (e.deltaY > 0 && index < data.length - 1) {
+        paginate(1);
+        scrolling.current = true;
+        setTimeout(() => { scrolling.current = false; }, 700); // match animation
+      } else if (e.deltaY < 0 && index > 0) {
+        paginate(-1);
+        scrolling.current = true;
+        setTimeout(() => { scrolling.current = false; }, 700);
+      }
+    };
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+    };
+  }, [index]);
+
   return (
     <div
+      ref={containerRef}
       style={{
         height: "100vh",
         width: "100vw",
@@ -97,12 +123,10 @@ export default function FullscreenCarousel() {
         >
           RESEARCHIT
         </div>
-
         <div style={{ flex: 1, maxWidth: "600px" }}>
           <SearchBar />
         </div>
       </div>
-
       {/* Card content */}
       <AnimatePresence custom={direction} mode="wait">
         <motion.div
@@ -138,7 +162,6 @@ export default function FullscreenCarousel() {
           >
             {data[index].title}
           </h1>
-
           <div
             style={{
               backgroundColor: "#eef2ff",
@@ -156,7 +179,6 @@ export default function FullscreenCarousel() {
             <strong>Abstract:</strong>
             <p style={{ marginTop: 10 }}>{data[index].abstract}</p>
           </div>
-
           <div
             style={{
               color: "#334155",
@@ -171,46 +193,50 @@ export default function FullscreenCarousel() {
           </div>
         </motion.div>
       </AnimatePresence>
-
-      {/* Navigation arrows */}
-      {index > 0 && (
-        <button
-          onClick={() => paginate(-1)}
-          style={{
-            position: "absolute",
-            left: "2%",
-            top: "50%",
-            transform: "translateY(-50%)",
-            fontSize: "3rem",
-            background: "none",
-            border: "none",
-            color: "#4b5563",
-            cursor: "pointer",
-            zIndex: 10,
-          }}
-        >
-          &#8592;
-        </button>
-      )}
-      {index < data.length - 1 && (
-        <button
-          onClick={() => paginate(1)}
-          style={{
-            position: "absolute",
-            right: "2%",
-            top: "50%",
-            transform: "translateY(-50%)",
-            fontSize: "3rem",
-            background: "none",
-            border: "none",
-            color: "#4b5563",
-            cursor: "pointer",
-            zIndex: 10,
-          }}
-        >
-          &#8594;
-        </button>
-      )}
+      {/* Navigation arrows (vertical, right side) */}
+      <div style={{
+        position: "absolute",
+        right: "2%",
+        top: "50%",
+        transform: "translateY(-50%)",
+        display: "flex",
+        flexDirection: "column",
+        gap: "1.5rem",
+        zIndex: 20,
+      }}>
+        {index > 0 && (
+          <button
+            onClick={() => paginate(-1)}
+            style={{
+              fontSize: "2.5rem",
+              background: "none",
+              border: "none",
+              color: "#4b5563",
+              cursor: "pointer",
+              padding: 0,
+            }}
+            aria-label="Previous"
+          >
+            &#8593;
+          </button>
+        )}
+        {index < data.length - 1 && (
+          <button
+            onClick={() => paginate(1)}
+            style={{
+              fontSize: "2.5rem",
+              background: "none",
+              border: "none",
+              color: "#4b5563",
+              cursor: "pointer",
+              padding: 0,
+            }}
+            aria-label="Next"
+          >
+            &#8595;
+          </button>
+        )}
+      </div>
     </div>
   );
 }
