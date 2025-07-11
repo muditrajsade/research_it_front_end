@@ -1,23 +1,23 @@
-import logo from './logo.svg';
-import './App.css';
-import { useState } from 'react';
-import { Router,Routes, Route} from 'react-router-dom';
-import Home from './components/home';
-import Index from './components/Landing';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './components/Home';
+import Landing from './components/Landing';
+import SearchPage from './components/SearchPage';
 import PaperList from './components/PaperList';
+import './App.css';
+
 function App() {
   return (
-    <div>
-      <Routes>
-      <Route path='/' element={<Index />} />
-      <Route path="/home" element={<Home />} />
-      <Route path="/paperlist" element={<PaperList />} />
-    </Routes>
-    
-
-    
-
-  </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/papers" element={<PaperList />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
