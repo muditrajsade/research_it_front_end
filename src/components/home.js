@@ -146,50 +146,92 @@ export default function FullscreenCarousel() {
             padding: "6rem 5vw 5vw", // top padding to account for top bar
             boxSizing: "border-box",
             display: "flex",
-            flexDirection: "column",
+            flexDirection: "row",
             justifyContent: "center",
-            gap: "2rem",
+            alignItems: "stretch",
+            gap: "2.5rem",
             background: "white",
+            borderRadius: 18,
+            boxShadow: "0 8px 32px rgba(80, 80, 160, 0.10)",
           }}
         >
-          <h1
-            style={{
-              fontSize: "3rem",
-              fontWeight: "bold",
-              textTransform: "uppercase",
-              color: "#3730a3",
-            }}
-          >
-            {data[index].title}
-          </h1>
+          {/* Left column: title only, vertically centered */}
           <div
             style={{
-              backgroundColor: "#eef2ff",
-              borderLeft: "6px solid #6366f1",
-              borderRadius: 10,
-              padding: "1.5rem",
-              maxHeight: "30vh",
-              overflowY: "auto",
-              fontStyle: "italic",
-              color: "#4f46e5",
-              fontSize: "1.125rem",
-              lineHeight: 1.7,
+              flex: 2,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              minWidth: 0,
+              paddingTop: "14vh", // Nudge title above center, easy to tweak
             }}
           >
-            <strong>Abstract:</strong>
-            <p style={{ marginTop: 10 }}>{data[index].abstract}</p>
+            <h1
+              style={{
+                fontSize: "3rem",
+                fontWeight: "bold",
+                textTransform: "uppercase",
+                color: "#3730a3",
+                textAlign: "center",
+                margin: 0,
+              }}
+            >
+              {data[index].title}
+            </h1>
           </div>
+          {/* Right column: abstract (nudged down) + summary stacked */}
           <div
             style={{
-              color: "#334155",
-              fontSize: "1.1rem",
-              lineHeight: 1.7,
-              maxHeight: "25vh",
-              overflowY: "auto",
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              justifyContent: "flex-start",
+              minWidth: 0,
+              position: "relative",
             }}
           >
-            <strong style={{ color: "#4338ca" }}>Summary:</strong>
-            <p style={{ marginTop: 10 }}>{data[index].summary}</p>
+            <div
+              style={{
+                backgroundColor: "#eef2ff",
+                borderLeft: "6px solid #6366f1",
+                borderRadius: 10,
+                padding: "1.5rem 1.25rem",
+                maxHeight: "40vh",
+                minWidth: 0,
+                width: "100%",
+                boxShadow: "0 2px 8px rgba(80,80,160,0.06)",
+                fontStyle: "italic",
+                color: "#4f46e5",
+                fontSize: "1.125rem",
+                lineHeight: 1.7,
+                marginBottom: "1.5rem",
+                marginTop: "18vh", // Nudge abstract down to just above center
+                transition: "margin-top 0.3s",
+              }}
+            >
+              <strong>Abstract:</strong>
+              <p style={{ marginTop: 10 }}>{data[index].abstract}</p>
+            </div>
+            <div
+              style={{
+                color: "#334155",
+                fontSize: "1.1rem",
+                lineHeight: 1.7,
+                maxHeight: "25vh",
+                overflowY: "auto",
+                background: "#f8fafc",
+                borderRadius: 10,
+                padding: "1.25rem 1.5rem",
+                boxShadow: "0 2px 8px rgba(80,80,160,0.04)",
+                width: "100%",
+                maxWidth: "100%",
+              }}
+            >
+              <strong style={{ color: "#4338ca" }}>Summary:</strong>
+              <p style={{ marginTop: 10 }}>{data[index].summary}</p>
+            </div>
           </div>
         </motion.div>
       </AnimatePresence>
