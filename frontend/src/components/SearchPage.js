@@ -1,4 +1,3 @@
-/ src/components/SearchPage.js - Main search page component
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import SearchBar from './SearchBar';
