@@ -58,7 +58,7 @@ app.add_middleware(
 class SearchRequest(BaseModel):
     query: str = Field(..., min_length=1, max_length=500, description="Search query")
     top_k: int = Field(10, ge=1, le=50, description="Number of results to return")
-    search_mode: str = Field("balanced", regex="^(fast|balanced|quality)$", description="Search mode")
+    search_mode: str = Field("balanced", pattern="^(fast|balanced|quality)$", description="Search mode")
     fetch_metadata: bool = Field(True, description="Whether to fetch paper metadata")
 
 class PaperMetadata(BaseModel):
@@ -322,13 +322,53 @@ async def get_stats():
     if search_system is None:
         raise HTTPException(status_code=503, detail="Search system not initialized")
     
-    return {
-        "cached_papers": len(search_system.metadata_fetcher.cache),
-        "gpu_count": search_system.gpu_count,
-        "collection_name": search_system.client.collection_name if hasattr(search_system, 'client') else "unknown",
-        "model_loaded": search_system.model is not None,
-        "tokenizer_loaded": search_system.tokenizer is not None
-    }
+    try:
+        # Get collection info safely
+        collection_info = None
+        try:
+            collection_info = search_system.client.get_collection("arxiv_specter2_recommendations")
+            points_count = collection_info.points_count
+        except Exception:
+            points_count = "unknown"
+        
+        return {
+            "cached_papers": len(search_system.metadata_fetcher.cache),
+            "gpu_count": search_system.gpu_count,
+            "collection_name": "arxiv_specter2_recommendations",
+            "collection_points": points_count,
+            "model_loaded": search_system.model is not None,
+            "tokenizer_loaded": search_system.tokenizer is not None,
+            "qdrant_connected": search_system.client is not None
+        }
+    except Exception as e:
+        logger.error(f"❌ Stats error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get stats: {str(e)}")
+
+@app.get("/collection-info")
+async def get_collection_info():
+    """Get detailed Qdrant collection information"""
+    if search_system is None:
+        raise HTTPException(status_code=503, detail="Search system not initialized")
+    
+    try:
+        collection_info = search_system.client.get_collection("arxiv_specter2_recommendations")
+        return {
+            "collection_name": "arxiv_specter2_recommendations",
+            "points_count": collection_info.points_count,
+            "config": {
+                "vector_size": collection_info.config.params.vectors.size,
+                "distance": collection_info.config.params.vectors.distance.name,
+                "hnsw_config": {
+                    "m": collection_info.config.params.hnsw_config.m,
+                    "ef_construct": collection_info.config.params.hnsw_config.ef_construct,
+                    "full_scan_threshold": collection_info.config.params.hnsw_config.full_scan_threshold,
+                }
+            },
+            "status": collection_info.status.name
+        }
+    except Exception as e:
+        logger.error(f"❌ Collection info error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get collection info: {str(e)}")
 
 if __name__ == "__main__":
     uvicorn.run(

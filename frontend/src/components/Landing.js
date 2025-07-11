@@ -24,7 +24,7 @@ const Index = () => {
 
         {/* Search Section */}
         <div className="w-full max-w-4xl mb-12">
-          <SearchBar />
+          <SearchBar onSearch={() => {}} />
         </div>
 
         {/* Quick Links */}

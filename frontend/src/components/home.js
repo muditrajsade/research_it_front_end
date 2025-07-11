@@ -124,7 +124,7 @@ export default function FullscreenCarousel() {
           RESEARCHIT
         </div>
         <div style={{ flex: 1, maxWidth: "600px" }}>
-          <SearchBar />
+          <SearchBar onSearch={() => {}} />
         </div>
       </div>
       {/* Card content */}
