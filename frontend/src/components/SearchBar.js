@@ -2,10 +2,10 @@
 // src/components/SearchBar.js - Updated SearchBar component
 import React, { useState } from 'react';
 import { Search, Loader2 } from 'lucide-react';
-
+import { useNavigate } from 'react-router-dom';
 const SearchBar = ({ onSearch, isLoading = false }) => {
   const [query, setQuery] = useState('');
-
+  let navigate = useNavigate();
   const handleSearch = async (e) => {
     e.preventDefault();
     if (query.trim()) {
@@ -21,6 +21,7 @@ const SearchBar = ({ onSearch, isLoading = false }) => {
       });
       let data = await rfd.json();
       let rfs = data.results;
+      
       let plm = [];
       for(let j = 0;j<rfs.length;j++){
         let rf = rfs[j];
@@ -28,11 +29,11 @@ const SearchBar = ({ onSearch, isLoading = false }) => {
         if(mtdata != null){
           let title = mtdata.title;
           let abstract = mtdata.abstract;
-          let pl = {title:title,abstract:abstract};
+          let pl = {title:title,abstract:abstract,arxiv_id:rf.arxiv_id};
           plm.push(pl);
         }
       }
-      navigate('/home',{
+      navigate('/papers',{
         state: {
           data: plm
         }
