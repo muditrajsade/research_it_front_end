@@ -10,7 +10,33 @@ const SearchBar = ({ onSearch, isLoading = false }) => {
     e.preventDefault();
     if (query.trim()) {
       console.log('Searching for:', query);
-      navigate('/home');
+      let rfd = await fetch('http://localhost:8000/auto-search',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          query: query
+        })
+      });
+      let data = await rfd.json();
+      let rfs = data.results;
+      let plm = [];
+      for(let j = 0;j<rfs.length;j++){
+        let rf = rfs[j];
+        let mtdata = rf.metadata;
+        if(mtdata != null){
+          let title = mtdata.title;
+          let abstract = mtdata.abstract;
+          let pl = {title:title,abstract:abstract};
+          plm.push(pl);
+        }
+      }
+      navigate('/home',{
+        state: {
+          data: plm
+        }
+      });
       // You can plug your search logic here
     }
   };
