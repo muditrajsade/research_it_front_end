@@ -1,49 +1,54 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 
-const data = [
-  {
-    title: "Deep Learning for Natural Language Processing",
-    abstract: "This paper explores advanced deep learning architectures for NLP tasks, including transformers and attention mechanisms, and demonstrates their effectiveness on benchmark datasets.",
-    summary: "This summary provides a concise overview of the key findings and implications of the research on deep learning in NLP.",
-  },
-  {
-    title: "Quantum Computing: An Overview and Future Directions",
-    abstract: "A comprehensive review of quantum computing principles, current hardware implementations, and the challenges that must be overcome for practical quantum advantage.",
-    summary: "This summary highlights the main points regarding the current state and future prospects of quantum computing.",
-  },
-  {
-    title: "Climate Change Impacts on Global Agriculture",
-    abstract: "This study analyzes the projected effects of climate change on crop yields worldwide, using simulation models and historical data to forecast food security risks.",
-    summary: "This summary discusses the anticipated impacts of climate change on agriculture and food security globally.",
-  },
-  {
-    title: "Blockchain Technology in Financial Services",
-    abstract: "An examination of how blockchain is transforming banking, payments, and asset management, with a focus on security, transparency, and regulatory considerations.",
-    summary: "This summary outlines the transformative effects of blockchain technology in the financial sector.",
-  },
-  {
-    title: "CRISPR and the Future of Gene Editing",
-    abstract: "An in-depth look at CRISPR-Cas9 technology, its applications in medicine and agriculture, and the ethical debates surrounding human genome editing.",
-    summary: "This summary reviews the advancements and ethical considerations of CRISPR gene editing.",
-  },
-  {
-    title: "Autonomous Vehicles: Safety and Policy Challenges",
-    abstract: "This paper reviews the current state of autonomous vehicle technology, accident statistics, and the evolving legal landscape for self-driving cars.",
-    summary: "This summary covers the safety and policy issues related to autonomous vehicles.",
-  },
-  {
-    title: "Renewable Energy Integration in Power Grids",
-    abstract: "A technical analysis of integrating solar and wind energy into existing power grids, addressing intermittency, storage, and grid stability issues.",
-    summary: "This summary explains the challenges and solutions for integrating renewable energy into power grids.",
-  },
-  {
-    title: "The Psychology of Social Media Addiction",
-    abstract: "Research findings on the behavioral and neurological factors contributing to social media addiction, and interventions for healthier digital habits.",
-    summary: "This summary presents the main findings on social media addiction and possible interventions.",
-  },
-];
-
+import { useNavigate } from "react-router-dom";
 export default function PaperList() {
+
+  let location = useLocation();
+  let data = location.state.data;
+  let navigate = useNavigate();
+  let r = async (arxiv_id)=>{
+    let rfd = await fetch('http://localhost:8000/similar',{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(
+        {
+          "arxiv_id": arxiv_id,
+          "top_k": 10,
+          "fetch_metadata": true,
+          "return_vector": false,
+          "save_embeddings_only": false
+        }
+      )
+    });
+    let data = await rfd.json();
+    let rfs = data.results;
+    let plm = [];
+    for(let j = 0;j<rfs.length;j++){
+      let rf = rfs[j];
+      let mtdata = rf.metadata;
+      if(mtdata != null){
+        let title = mtdata.title;
+        let abstract = mtdata.abstract;
+        let pl = {title:title,abstract:abstract};
+        plm.push(pl);
+      }
+
+      navigate('/home',{
+        state: {
+          data: plm
+        }
+      });
+      
+    }
+
+  
+
+  } 
+  
+  
   return (
     <div
       style={{
@@ -62,8 +67,9 @@ export default function PaperList() {
       </h2>
       <div style={{ width: "100%", maxWidth: 900, display: "flex", flexDirection: "column", gap: "2.5rem" }}>
         {data.map((item, idx) => (
-          <div
-            key={idx}
+          <button key={idx} onClick={()=>r(item.arxiv_id)}>
+            <div
+            
             style={{
               background: "white",
               borderRadius: 16,
@@ -77,8 +83,9 @@ export default function PaperList() {
           >
             <div style={{ fontSize: "1.7rem", fontWeight: 700, color: "#4f46e5" }}>{item.title}</div>
             <div style={{ color: "#334155", fontSize: "1.15rem", fontStyle: "italic" }}>{item.abstract}</div>
-            <div style={{ color: "#64748b", fontSize: "1.05rem" }}>{item.summary}</div>
+            
           </div>
+          </button>
         ))}
       </div>
     </div>

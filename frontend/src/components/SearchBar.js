@@ -6,10 +6,12 @@ import { Search, Loader2 } from 'lucide-react';
 const SearchBar = ({ onSearch, isLoading = false }) => {
   const [query, setQuery] = useState('');
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
-    if (query.trim() && !isLoading) {
-      onSearch(query.trim());
+    if (query.trim()) {
+      console.log('Searching for:', query);
+      navigate('/home');
+      // You can plug your search logic here
     }
   };
 

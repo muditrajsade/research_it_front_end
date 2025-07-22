@@ -1,34 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SearchBar from "./SearchBar";
+import { useLocation } from "react-router-dom";
 
-const data = [
-  {
-    title: "Welcome to My Site",
-    abstract: "This is a long abstract for Welcome explaining the site in detail. It elaborates the features, goals, and target audience.",
-    summary: "A short overview of what the site does and why it matters.",
-  },
-  {
-    title: "Explore the Features",
-    abstract: "Abstract about features in depth with technical breakdown.",
-    summary: "Key functionalities and what makes them unique.",
-  },
-  {
-    title: "Meet the Team",
-    abstract: "Learn more about the people behind the product and their experience.",
-    summary: "Overview of team members, skills, and culture.",
-  },
-  {
-    title: "Read Our Blog",
-    abstract: "Discover updates, tips, and deep dives in our regular blog posts.",
-    summary: "Highlights of our blog content and strategy.",
-  },
-  {
-    title: "Contact Us",
-    abstract: "Ways to reach us for support, feedback, or collaboration.",
-    summary: "Our contact methods and expected response times.",
-  },
-];
 
 const variants = {
   enter: (direction) => ({
@@ -50,6 +24,8 @@ export default function FullscreenCarousel() {
   const [[index, direction], setIndex] = useState([0, 0]);
   const scrolling = useRef(false); // throttle flag
   const containerRef = useRef(null);
+  let location = useLocation();
+  let data = location.state.data;
 
   const SCROLL_THRESHOLD = 50; // Only trigger if deltaY is large enough
 
@@ -207,31 +183,15 @@ export default function FullscreenCarousel() {
                 fontSize: "1.125rem",
                 lineHeight: 1.7,
                 marginBottom: "1.5rem",
-                marginTop: "18vh", // Nudge abstract down to just above center
-                transition: "margin-top 0.3s",
+                marginTop: "18vh",
+                overflowY: "auto",           // ➕ makes content scrollable
+                scrollbarWidth: "thin",      // ➕ optional (Firefox)
               }}
             >
               <strong>Abstract:</strong>
               <p style={{ marginTop: 10 }}>{data[index].abstract}</p>
             </div>
-            <div
-              style={{
-                color: "#334155",
-                fontSize: "1.1rem",
-                lineHeight: 1.7,
-                maxHeight: "25vh",
-                overflowY: "auto",
-                background: "#f8fafc",
-                borderRadius: 10,
-                padding: "1.25rem 1.5rem",
-                boxShadow: "0 2px 8px rgba(80,80,160,0.04)",
-                width: "100%",
-                maxWidth: "100%",
-              }}
-            >
-              <strong style={{ color: "#4338ca" }}>Summary:</strong>
-              <p style={{ marginTop: 10 }}>{data[index].summary}</p>
-            </div>
+            
           </div>
         </motion.div>
       </AnimatePresence>
